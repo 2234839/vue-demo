@@ -52,10 +52,13 @@ function inter(exp: string, table: table) {
       return a + Number(evaluation(b, table));
     }, 0);
   }
-
-  return eval(
-    exp,
-    //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
-    [select, sum],
-  );
+  try {
+    return eval(
+      exp,
+      //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
+      [select, sum],
+    );
+  } catch (error) {
+    return String(error);
+  }
 }
