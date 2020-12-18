@@ -15,15 +15,50 @@ export default defineComponent({
       ],
     ]);
 
-    function repeatCall(f: Function, i: number) {
-      if (i > 0) {
-        f();
-        repeatCall(f, i - 1);
-      } else {
+    /** ═════════🏳‍🌈 下面这个块内的代码是测试用的 🏳‍🌈═════════  */
+    {
+      function repeatCall(f: Function, i: number) {
+        if (i > 0) {
+          f();
+          repeatCall(f, i - 1);
+        } else {
+        }
       }
+      repeatCall(addNewCol, 8);
+      repeatCall(addNewRow, 8);
+      /** 斐波那契数列测试 */
+      table[0].forEach((el, index) => {
+        if (index === 0) {
+        } else if (index === 1) {
+          el.isExp = true;
+          el.value = `sum(select([0,${index - 1}]))`;
+        } else {
+          el.isExp = true;
+          el.value = `sum(select([0,${index - 1}],[0,${index - 2}]))`;
+        }
+      });
+      // 目前是没有优化的，再往后算上一轮就很慢了
+      // table[1].forEach((el, index) => {
+      //   if (index === 0) {
+      //     el.isExp = true;
+      //     el.value = `sum(select([0,10]))`;
+      //   } else if (index === 1) {
+      //     el.isExp = true;
+      //     el.value = `sum(select([0,10],[1,${index - 1}]))`;
+      //   } else {
+      //     el.isExp = true;
+      //     el.value = `sum(select([1,${index - 1}],[1,${index - 2}]))`;
+      //   }
+      // });
+      // 等比数列测试
+      table[2].forEach((el, index) => {
+        if (index === 0) {
+        } else {
+          el.isExp = true;
+          el.value = `sum(select([2,${index - 1}])) * 2`;
+        }
+      });
     }
-    repeatCall(addNewCol, 8);
-    repeatCall(addNewRow, 8);
 
     function addNewCol() {
       table.forEach((row) => row.push(new Td("1")));
