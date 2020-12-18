@@ -104,6 +104,10 @@ export default defineComponent({
     const computedTable = computed(() =>
       table.map((row) =>
         row.map((td) => {
+          // 经尝试，单纯的修改 td 不会创建新的 computed ，但 table 新增元素会导致创建和 td 数量一样多的 computed；
+          // 优化点：应该保留原有的 computed
+          console.log("<new computed>");
+
           return computed(() => {
             const value = evaluation(td, table);
             updateTheOrder += 1;
@@ -139,6 +143,7 @@ class Td {
     public value = "",
     /** 是否作为函数 */
     public isExp = false,
+    public cache = null,
   ) {}
 }
 
@@ -150,13 +155,19 @@ function evaluation(td: Td, table: table) {
     return String(error);
   }
   function evaluation1(td: Td, env: Td[]) {
-    console.log("eval");
+    console.log("<eval>");
 
     if (env.includes(td)) {
       throw `<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`;
     } else {
       if (td.isExp) {
-        return inter(td.value);
+        if (td.cache === null || env.length === 0) {
+          const r = inter(td.value);
+          td.cache = r;
+          return r;
+        } else {
+          return td.cache;
+        }
       } else {
         return td.value;
       }
