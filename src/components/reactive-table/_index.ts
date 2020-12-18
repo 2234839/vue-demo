@@ -10,7 +10,7 @@ export default defineComponent({
       [new Td("2"), new Td("2"), new Td("2")],
       [
         new Td("sumFilterNaN(select([0,0],[0,1],[0,2]))", true),
-        new Td("sumFilterNaN(select([1,0],[1,1],[1,2]))", true),
+        new Td("sum(select([1,0],[1,1],[1,2]))", true),
         new Td("sumFilterNaN(select([2,0],[2,1]))", true),
       ],
     ]);
@@ -104,9 +104,17 @@ class Td {
 
 /** 求值函数，存在递归的问题 */
 function evaluation(td: Td, table: table) {
-  return evaluation1(td, []);
+  try {
+    return evaluation1(td, []);
+  } catch (error) {
+    return String(error);
+  }
   function evaluation1(td: Td, env: Td[]) {
+    console.log(td, env);
+
     if (env.includes(td)) {
+      console.log(`<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`);
+
       throw `<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`;
     } else {
       if (td.isExp) {
@@ -136,15 +144,11 @@ function evaluation(td: Td, table: table) {
           }
         }, 0);
       }
-      try {
-        return eval(
-          exp,
-          //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
-          [select, sum, sumFilterNaN],
-        );
-      } catch (error) {
-        return String(error);
-      }
+      return eval(
+        exp,
+        //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
+        [select, sum, sumFilterNaN],
+      );
     }
   }
 }
