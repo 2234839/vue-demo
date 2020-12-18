@@ -6,12 +6,12 @@ type col_i = number;
 export default defineComponent({
   setup() {
     const table = reactive([
-      [new Td("1"), new Td("1"), new Td("1")],
+      [new Td("1"), new Td("sum(select([0,1]))", true), new Td("sum(select([0,0])) + 42", true)],
       [new Td("2"), new Td("2"), new Td("2")],
       [
-        new Td("sum(select([0,0],[0,1],[0,2]))", true),
-        new Td("sum(select([1,0],[1,1],[1,2]))", true),
-        new Td("sum(select([2,0],[2,1]))", true),
+        new Td("sumFilterNaN(select([0,0],[0,1],[0,2]))", true),
+        new Td("sumFilterNaN(select([1,0],[1,1],[1,2]))", true),
+        new Td("sumFilterNaN(select([2,0],[2,1]))", true),
       ],
     ]);
     function addNewCol() {
@@ -67,7 +67,7 @@ export default defineComponent({
           return computed(() => {
             const value = evaluation(td, table);
             updateTheOrder += 1;
-            addLog(`第${updateTheOrder}次计算，值为 [${td.isExp ? "exp" : "raw"}] ${value}`);
+            addLog(`第${updateTheOrder}次计算，[${求坐标(td, table)}] 处的值为<${td.isExp ? "exp" : "raw"} ${value}>`);
             return {
               value,
               /** value 是哪一次计算出来的 */
@@ -106,9 +106,8 @@ class Td {
 function evaluation(td: Td, table: table) {
   return evaluation1(td, []);
   function evaluation1(td: Td, env: Td[]) {
-
     if (env.includes(td)) {
-      throw "<发现循环引用，无法求值>";
+      throw `<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`;
     } else {
       if (td.isExp) {
         return inter(td.value);
@@ -126,15 +125,31 @@ function evaluation(td: Td, table: table) {
           return a + Number(evaluation1(b, [...env, td]));
         }, 0);
       }
+      /** 对值为转为数值之后是 nan 的当做不存在 */
+      function sumFilterNaN(ls: Td[]) {
+        return ls.reduce((a, b) => {
+          const r = Number(evaluation1(b, [...env, td]));
+          if (isNaN(r)) {
+            return a;
+          } else {
+            return a + r;
+          }
+        }, 0);
+      }
       try {
         return eval(
           exp,
           //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
-          [select, sum],
+          [select, sum, sumFilterNaN],
         );
       } catch (error) {
         return String(error);
       }
     }
   }
+}
+
+function 求坐标(td: Td, table: table): [row_i, col_i] {
+  const row_i = table.findIndex((el) => el.includes(td));
+  return [row_i, table[row_i].findIndex((el) => el === td)];
 }
