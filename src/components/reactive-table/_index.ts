@@ -14,6 +14,17 @@ export default defineComponent({
         new Td("sumFilterNaN(select([2,0],[2,1]))", true),
       ],
     ]);
+
+    function repeatCall(f: Function, i: number) {
+      if (i > 0) {
+        f();
+        repeatCall(f, i - 1);
+      } else {
+      }
+    }
+    repeatCall(addNewCol, 8);
+    repeatCall(addNewRow, 8);
+
     function addNewCol() {
       table.forEach((row) => row.push(new Td("1")));
     }
@@ -35,14 +46,10 @@ export default defineComponent({
     }
 
     let updateTheOrder = 0;
-    let time = performance.now();
-    let computing = true;
-    const updateLog = ref([] as string[]);
-    function addLog(p: string) {
-      if (computing === false) {
-        time = performance.now();
-      }
-      updateLog.value.push(p);
+
+    const updateLog = ref([] as [string, number][]);
+    function addLog(p: string, t = performance.now()) {
+      updateLog.value.push([p, t]);
     }
     const updateLogView = computed(() => [...updateLog.value].reverse());
 
@@ -50,13 +57,11 @@ export default defineComponent({
 
     watchEffect(() => {
       const length = updateLog.value.length;
-      computing = true;
-      if (updateLog.value[length - 1].startsWith("//")) {
-        computing = false;
-      }
       nextTick(() => {
-        if (length === updateLog.value.length && !updateLog.value[length - 1].startsWith("//")) {
-          addLog(`// ${new Date().toLocaleString()} 计算完毕,耗时 ${performance.now() - time}ms`);
+        if (length === updateLog.value.length && !updateLog.value[length - 1][0].startsWith("//")) {
+          const startLog_i = updateLogView.value.findIndex((el) => el[0].startsWith("//")) - 1;
+          const elapsedTime = updateLog.value[length - 1][1] - updateLogView.value[startLog_i][1];
+          addLog(`// ${new Date().toLocaleString()} 计算完毕,耗时 ${elapsedTime}ms`);
         }
       });
     });
@@ -110,11 +115,9 @@ function evaluation(td: Td, table: table) {
     return String(error);
   }
   function evaluation1(td: Td, env: Td[]) {
-    console.log(td, env);
+    console.log("eval");
 
     if (env.includes(td)) {
-      console.log(`<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`);
-
       throw `<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`;
     } else {
       if (td.isExp) {
