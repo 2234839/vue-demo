@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, reactive, watchEffect } from "vue";
+import { computed, ComputedRef, defineComponent, reactive, ref, watchEffect } from "vue";
 type table = Td[][];
 type row_i = number;
 type col_i = number;
@@ -15,24 +15,35 @@ export default defineComponent({
       ],
     ]);
 
+    let updateTheOrder = 0;
+
+    const updateLog = ref([] as string[]);
+    const updateLogView = computed(() => [...updateLog.value].reverse());
+
     /** 从原始数据计算出值的新表 */
     const computedTable = computed(() =>
       table.map((row) =>
         row.map((td) => {
           return computed(() => {
-            const v = evaluation(td, table);
-            console.log(`[${td.isExp ? "exp" : "raw"}]` + td.value);
-            return v;
+            const value = evaluation(td, table);
+            updateTheOrder += 1;
+            updateLog.value.push(`第${updateTheOrder}次计算，值为 [${td.isExp ? "exp" : "raw"}] ${value}`);
+            return {
+              value,
+              /** value 是哪一次计算出来的 */
+              updateTheOrder,
+            };
           });
         }),
       ),
     );
     watchEffect(() => {
-      console.table(computedTable.value.map((el) => el.map((el) => el.value)));
+      console.table(computedTable.value.map((el) => el.map((el) => el.value.value)));
     });
     return {
       table,
       computedTable,
+      updateLogView,
     };
   },
 });
