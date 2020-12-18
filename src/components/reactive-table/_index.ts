@@ -77,9 +77,7 @@ export default defineComponent({
         }),
       ),
     );
-    watchEffect(() => {
-      console.table(computedTable.value.map((el) => el.map((el) => el.value.value)));
-    });
+
     return {
       table,
       computedTable,
@@ -104,31 +102,39 @@ class Td {
   ) {}
 }
 
-/** 求值函数 */
+/** 求值函数，存在递归的问题 */
 function evaluation(td: Td, table: table) {
-  if (td.isExp) {
-    return inter(td.value, table);
-  } else {
-    return td.value;
-  }
-}
+  return evaluation1(td, []);
+  function evaluation1(td: Td, env: Td[]) {
 
-function inter(exp: string, table: table) {
-  function select(...position: [row_i, col_i][]): Td[] {
-    return position.map((el) => table[el[0]][el[1]]);
-  }
-  function sum(ls: Td[]): number {
-    return ls.reduce((a, b) => {
-      return a + Number(evaluation(b, table));
-    }, 0);
-  }
-  try {
-    return eval(
-      exp,
-      //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
-      [select, sum],
-    );
-  } catch (error) {
-    return String(error);
+    if (env.includes(td)) {
+      throw "<发现循环引用，无法求值>";
+    } else {
+      if (td.isExp) {
+        return inter(td.value);
+      } else {
+        return td.value;
+      }
+    }
+
+    function inter(exp: string) {
+      function select(...position: [row_i, col_i][]): Td[] {
+        return position.map((el) => table[el[0]][el[1]]);
+      }
+      function sum(ls: Td[]): number {
+        return ls.reduce((a, b) => {
+          return a + Number(evaluation1(b, [...env, td]));
+        }, 0);
+      }
+      try {
+        return eval(
+          exp,
+          //@ts-expect-error  这里用于保证编译后 select 这些函数不被删除掉
+          [select, sum],
+        );
+      } catch (error) {
+        return String(error);
+      }
+    }
   }
 }
