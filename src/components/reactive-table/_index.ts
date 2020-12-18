@@ -68,6 +68,16 @@ export default defineComponent({
       table.push(row);
     }
     const selectTd = ref(new Td(""));
+    /** 可能是被当前选中的 td 所依赖的块 */
+    const mayBeAssociatedTd = computed(() => {
+      if (selectTd.value.isExp) {
+        return [...selectTd.value.value.matchAll(/\[(\d+),(\d+)\]/g)].map((el) => {
+          return table[Number(el[1])][Number(el[2])];
+        });
+      } else {
+        return [];
+      }
+    });
     function select(td: Td) {
       selectTd.value = td;
     }
@@ -80,16 +90,13 @@ export default defineComponent({
       editState.value.show = true;
     }
 
-    let updateTheOrder = 0;
-
+    /** ═════════🏳‍🌈 debug 日志 🏳‍🌈═════════  */
     const updateLog = ref([] as [string, number][]);
     function addLog(p: string, t = performance.now()) {
       updateLog.value.push([p, t]);
     }
     const updateLogView = computed(() => [...updateLog.value].reverse());
-
     addLog(`// ${new Date().toLocaleString()} 程序启动`);
-
     watchEffect(() => {
       const length = updateLog.value.length;
       nextTick(() => {
@@ -100,6 +107,8 @@ export default defineComponent({
         }
       });
     });
+    /** ═════════🏳‍🌈 数据表的实际可视部分 🏳‍🌈═════════  */
+    let updateTheOrder = 0;
     /** 从原始数据计算出值的新表 */
     const computedTable = computed(() =>
       table.map((row) =>
@@ -133,6 +142,7 @@ export default defineComponent({
       editTd,
       editState,
       edit,
+      mayBeAssociatedTd,
     };
   },
 });

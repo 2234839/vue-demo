@@ -14,7 +14,7 @@
     <div class="c-row" v-for="(row, row_i) in table" :key="row_i">
       <div
         class="c-td"
-        :class="{ '-editing': editTd === td, '-is_exp': td.isExp }"
+        :class="{ '-editing': editTd === td, '-is_exp': td.isExp, '-depended': mayBeAssociatedTd.includes(td) }"
         v-for="(td, col_i) in row"
         :key="col_i"
         :title="'position:' + row_i + ',' + col_i"
@@ -59,6 +59,9 @@
     color: rgb(30, 148, 0);
     font-size: 16px;
     font-weight: bold;
+  }
+  .c-td.-depended {
+    background: rgb(233, 167, 46);
   }
   .c-td-no {
     position: absolute;
