@@ -1,4 +1,4 @@
-import { computed, ComputedRef, defineComponent, reactive, ref, watchEffect } from "vue";
+import { computed, ComputedRef, defineComponent, nextTick, reactive, ref, watchEffect } from "vue";
 type table = Td[][];
 type row_i = number;
 type col_i = number;
@@ -14,12 +14,40 @@ export default defineComponent({
         new Td("sum(select([2,0],[2,1]))", true),
       ],
     ]);
+    function addNewCol() {
+      table.forEach((row) => row.push(new Td("1")));
+    }
+    function addNewRow() {
+      const row = table[0].map(() => new Td("1"));
+      table.push(row);
+    }
 
     let updateTheOrder = 0;
-
+    let time = performance.now();
+    let computing = true;
     const updateLog = ref([] as string[]);
+    function addLog(p: string) {
+      if (computing === false) {
+        time = performance.now();
+      }
+      updateLog.value.push(p);
+    }
     const updateLogView = computed(() => [...updateLog.value].reverse());
 
+    addLog(`// ${new Date().toLocaleString()} 程序启动`);
+
+    watchEffect(() => {
+      const length = updateLog.value.length;
+      computing = true;
+      if (updateLog.value[length - 1].startsWith("//")) {
+        computing = false;
+      }
+      nextTick(() => {
+        if (length === updateLog.value.length && !updateLog.value[length - 1].startsWith("//")) {
+          addLog(`// ${new Date().toLocaleString()} 计算完毕,耗时 ${performance.now() - time}ms`);
+        }
+      });
+    });
     /** 从原始数据计算出值的新表 */
     const computedTable = computed(() =>
       table.map((row) =>
@@ -27,7 +55,7 @@ export default defineComponent({
           return computed(() => {
             const value = evaluation(td, table);
             updateTheOrder += 1;
-            updateLog.value.push(`第${updateTheOrder}次计算，值为 [${td.isExp ? "exp" : "raw"}] ${value}`);
+            addLog(`第${updateTheOrder}次计算，值为 [${td.isExp ? "exp" : "raw"}] ${value}`);
             return {
               value,
               /** value 是哪一次计算出来的 */
@@ -44,6 +72,8 @@ export default defineComponent({
       table,
       computedTable,
       updateLogView,
+      addNewRow,
+      addNewCol,
     };
   },
 });
