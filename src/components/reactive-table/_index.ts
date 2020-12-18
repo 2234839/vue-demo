@@ -1,11 +1,11 @@
-import { defineComponent, reactive } from "vue";
+import { computed, ComputedRef, defineComponent, reactive, watchEffect } from "vue";
 type table = Td[][];
 type row_i = number;
 type col_i = number;
 
 export default defineComponent({
   setup() {
-    const table: table = reactive([
+    const table = reactive([
       [new Td("1"), new Td("1"), new Td("1")],
       [new Td("2"), new Td("2"), new Td("2")],
       [
@@ -15,11 +15,24 @@ export default defineComponent({
       ],
     ]);
 
+    /** 从原始数据计算出值的新表 */
+    const computedTable = computed(() =>
+      table.map((row) =>
+        row.map((td) => {
+          return computed(() => {
+            const v = evaluation(td, table);
+            console.log(`[${td.isExp ? "exp" : "raw"}]` + td.value);
+            return v;
+          });
+        }),
+      ),
+    );
+    watchEffect(() => {
+      console.table(computedTable.value.map((el) => el.map((el) => el.value)));
+    });
     return {
       table,
-      valueOf(td: Td) {
-        return evaluation(td, table);
-      },
+      computedTable,
     };
   },
 });
@@ -36,7 +49,6 @@ class Td {
 /** 求值函数 */
 function evaluation(td: Td, table: table) {
   if (td.isExp) {
-    console.log("[td] inter", td);
     return inter(td.value, table);
   } else {
     return td.value;
