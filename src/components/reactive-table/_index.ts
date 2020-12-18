@@ -37,19 +37,19 @@ export default defineComponent({
           el.value = `sum(select([0,${index - 1}],[0,${index - 2}]))`;
         }
       });
-      // 目前是没有优化的，再往后算上一轮就很慢了
-      // table[1].forEach((el, index) => {
-      //   if (index === 0) {
-      //     el.isExp = true;
-      //     el.value = `sum(select([0,10]))`;
-      //   } else if (index === 1) {
-      //     el.isExp = true;
-      //     el.value = `sum(select([0,10],[1,${index - 1}]))`;
-      //   } else {
-      //     el.isExp = true;
-      //     el.value = `sum(select([1,${index - 1}],[1,${index - 2}]))`;
-      //   }
-      // });
+      // ~~目前是没有优化的，再往后算上一轮就很慢了~~ 使用缓存后，这个速度已经可以接受了
+      table[1].forEach((el, index) => {
+        if (index === 0) {
+          el.isExp = true;
+          el.value = `sum(select([0,10]))`;
+        } else if (index === 1) {
+          el.isExp = true;
+          el.value = `sum(select([0,10],[1,${index - 1}]))`;
+        } else {
+          el.isExp = true;
+          el.value = `sum(select([1,${index - 1}],[1,${index - 2}]))`;
+        }
+      });
       // 等比数列测试
       table[2].forEach((el, index) => {
         if (index === 0) {
@@ -155,8 +155,6 @@ function evaluation(td: Td, table: table) {
     return String(error);
   }
   function evaluation1(td: Td, env: Td[]) {
-    console.log("<eval>");
-
     if (env.includes(td)) {
       throw `<发现[${求坐标(td, table)}]处存在循环引用，无法求值>`;
     } else {
@@ -174,6 +172,8 @@ function evaluation(td: Td, table: table) {
     }
 
     function inter(exp: string) {
+      console.log("<inter>");
+
       function select(...position: [row_i, col_i][]): Td[] {
         return position.map((el) => table[el[0]][el[1]]);
       }
