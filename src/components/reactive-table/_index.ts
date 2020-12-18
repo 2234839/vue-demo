@@ -21,6 +21,18 @@ export default defineComponent({
       const row = table[0].map(() => new Td("1"));
       table.push(row);
     }
+    const selectTd = ref(new Td(""));
+    function select(td: Td) {
+      selectTd.value = td;
+    }
+    const editTd = ref(new Td(""));
+    const editState = ref({
+      show: false,
+    });
+    function edit(td: Td) {
+      editTd.value = td;
+      editState.value.show = true;
+    }
 
     let updateTheOrder = 0;
     let time = performance.now();
@@ -74,6 +86,11 @@ export default defineComponent({
       updateLogView,
       addNewRow,
       addNewCol,
+      selectTd,
+      select,
+      editTd,
+      editState,
+      edit,
     };
   },
 });
