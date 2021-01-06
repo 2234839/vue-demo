@@ -26,9 +26,6 @@
 
       return { templateName, template };
     },
-    components: {
-      Aaa: defineAsyncComponent(componentsList.undefined),
-    },
   });
 </script>
 
