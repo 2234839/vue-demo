@@ -1,4 +1,4 @@
-<template>这里是a模板</template>
+<template>这里是b模板</template>
 
 <script lang="ts"></script>
 
