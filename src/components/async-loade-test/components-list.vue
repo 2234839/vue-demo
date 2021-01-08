@@ -1,20 +1,19 @@
 <template>
-  <input
-    v-model="templateName"
-    placeholder="输入「a」「b」或者其他字符"
-    style="width: 400px"
-  />
+  选择demo：
   <select v-model="templateName">
     <option disabled value="">请选择</option>
-    <option
-      v-for="(item, index) in componentsInfoList"
-      :key="index"
-      :value="item"
-    >
-      {{ item }}
+    <option v-for="(item, key) in componentsList" :key="key" :value="key">
+      {{ key }}
     </option>
   </select>
-  <div>
+  <input
+    v-model="templateName"
+    placeholder="输入「a」「b」或者其他 demo 名字来选择"
+    style="width: 400px"
+  />
+  <div>组件描述：{{ component.des }}</div>
+
+  <div style="border: 1px solid #333">
     <component :is="template" />
   </div>
 </template>
@@ -32,26 +31,20 @@
   export default defineComponent({
     setup(props, ctx) {
       const templateName = ref("");
-
+      const component = computed(() => {
+        if (templateName.value in componentsList) {
+          return componentsList[
+            templateName.value as keyof typeof componentsList
+          ];
+        } else {
+          return componentsList.undefined;
+        }
+      });
       const template = computed(() =>
-        defineAsyncComponent(
-          (() => {
-            if (templateName.value in componentsList) {
-              return componentsList[
-                templateName.value as keyof typeof componentsList
-              ];
-            } else {
-              return componentsList.undefined;
-            }
-          })(),
-        ),
+        defineAsyncComponent(component.value.getter),
       );
 
-      const componentsInfoList = computed(() => {
-        return Object.keys(componentsList);
-      });
-
-      return { templateName, template, componentsInfoList };
+      return { templateName, template, componentsList, component };
     },
   });
 </script>
