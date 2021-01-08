@@ -4,6 +4,7 @@ import { usePromiseComputed } from "./lib/vue.composition.api";
 export default defineComponent({
   setup(props, ctx) {
     const searchText = ref("");
+
     const searchResults = usePromiseComputed({
       defaultData: [] as string[],
       getter() {
@@ -22,34 +23,7 @@ export default defineComponent({
         }
       },
     });
-    watchEffect(
-      () =>
-        new Promise((s) => {
-          console.log("444", searchText.value);
 
-          s(3);
-        }),
-    );
-    // const a = computed(
-    //   // () =>
-    //   //   new Promise((s) => {
-    //   //     setTimeout(
-    //   //       () =>
-    //   //         s(
-    //   //           [...searchText.value].map(
-    //   //             (el) => `[${el}]  ${new Date().toLocaleString()}`,
-    //   //           ),
-    //   //         ),
-    //   //       100,
-    //   //     );
-    //   //   }),
-    // );
-    watchEffect(() => {
-      console.log("[searchResults.value.data]", searchResults.value.data);
-    });
-    watchEffect(() => {
-      console.log("[searchText.value]", searchText.value);
-    });
 
     return { searchText, searchResults };
   },
