@@ -1,4 +1,4 @@
-import { defineComponent, ref, reactive, watchEffect, computed } from "vue";
+import { defineComponent, ref } from "vue";
 import { usePromiseComputed } from "./lib/vue.composition.api";
 
 export default defineComponent({
@@ -9,22 +9,21 @@ export default defineComponent({
       defaultData: [] as string[],
       getter() {
         return searchApi(searchText.value);
-
-        function searchApi(searchText: string) {
-          return new Promise<string[]>((s, j) => {
-            setTimeout(() => {
-              if (Math.random() < 0.5) {
-                s([`[查询成功] ： 搜索的字符串 「${searchText}」`]);
-              } else {
-                j([`[查询失败] ： 搜索的字符串 「${searchText}」`]);
-              }
-            }, 1000);
-          });
-        }
       },
     });
-
 
     return { searchText, searchResults };
   },
 });
+
+function searchApi(searchText: string) {
+  return new Promise<string[]>((s, j) => {
+    setTimeout(() => {
+      if (Math.random() < 0.5) {
+        s([`[查询成功] ： 搜索的字符串 「${searchText}」`]);
+      } else {
+        j([`[查询失败] ： 搜索的字符串 「${searchText}」`]);
+      }
+    }, 1000);
+  });
+}

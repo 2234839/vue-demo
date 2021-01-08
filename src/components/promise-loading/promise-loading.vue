@@ -13,6 +13,7 @@
       {{ item }}
     </div>
   </div>
+
 </template>
 
 <script src="./_promise-loading.ts" lang="ts"></script>
