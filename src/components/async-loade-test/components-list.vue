@@ -29,8 +29,11 @@
   } from "vue";
   import { componentsList } from "./components-list";
   export default defineComponent({
+    props: {
+      defaultTemplateName: String,
+    },
     setup(props, ctx) {
-      const templateName = ref("");
+      const templateName = ref(props.defaultTemplateName || "");
       const component = computed(() => {
         if (templateName.value in componentsList) {
           return componentsList[
