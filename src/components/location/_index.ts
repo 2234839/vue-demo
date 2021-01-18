@@ -7,7 +7,11 @@ export default defineComponent({
       getter: () => getCurrentPosition(),
     });
 
-    return { position };
+    const 高德URL = computed(() => {
+      const coords = position.value.data?.[0]?.coords;
+      return `https://uri.amap.com/marker?position=${coords?.longitude},${coords?.latitude}`;
+    });
+    return { position, 高德URL };
   },
 });
 

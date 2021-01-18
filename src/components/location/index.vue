@@ -3,6 +3,8 @@
   <div v-else-if="position.fulfilled && position.data[0]">
     经纬度 ({{ position.data[0].coords.longitude }},
     {{ position.data[0].coords.latitude }})
+
+    <a :href="高德URL">前往高德查看</a>
   </div>
   <div v-else>查询失败 {{ position.data[1]?.message }}</div>
 </template>
