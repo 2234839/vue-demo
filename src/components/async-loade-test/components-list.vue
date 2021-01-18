@@ -19,21 +19,22 @@
 </template>
 
 <script lang="ts">
-  import {
-    defineComponent,
-    ref,
-    reactive,
-    computed,
-    watchEffect,
-    defineAsyncComponent,
-  } from "vue";
+  import { defineComponent, ref, computed, defineAsyncComponent } from "vue";
   import { componentsList } from "./components-list";
   export default defineComponent({
     props: {
-      defaultTemplateName: String,
+      templateName: {
+        type: String,
+        default: "",
+      },
     },
+    emits: ["update:templateName"],
     setup(props, ctx) {
-      const templateName = ref(props.defaultTemplateName || "");
+      const templateName = computed({
+        get: () => props.templateName || "",
+        set: (val) => ctx.emit("update:templateName", val),
+      });
+
       const component = computed(() => {
         if (templateName.value in componentsList) {
           return componentsList[

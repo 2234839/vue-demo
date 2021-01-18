@@ -1,4 +1,10 @@
 export const componentsList = {
+  "location": {
+    getter: () => import("../location/index.vue"),
+    des:
+      "获取并显示当前位置",
+  },
+
   "reactive-table": {
     getter: () => import("../reactive-table/index.vue"),
     des:

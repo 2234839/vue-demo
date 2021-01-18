@@ -31,7 +31,7 @@ interface usePromiseComputedOptions<T> {
   /** 处理数据是否要和之前的数据进行合并 */
   dataMergeFun?: (oldData: T, newData: T) => T;
   /** data 的默认值 */
-  defaultData: T;
+  defaultData?: T;
 }
 export function usePromiseComputed<T, Err = Error>({
   deps,
@@ -45,8 +45,6 @@ export function usePromiseComputed<T, Err = Error>({
   }
   return customRef<PromiseObj<T, Err>>((track, trigger) => {
     if (!deps) {
-      console.log(33);
-
       watchEffect(() => update(getter()));
     } else if (deps) {
       watch(deps, () => update(getter()), { immediate: true });
