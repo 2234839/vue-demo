@@ -1,8 +1,11 @@
 export const componentsList = {
-  "location": {
+  vditor: {
+    getter: () => import("../vditor/index.vue"),
+    des: "vditor 编辑器",
+  },
+  location: {
     getter: () => import("../location/index.vue"),
-    des:
-      "获取并显示当前位置",
+    des: "获取并显示当前位置",
   },
 
   "reactive-table": {
