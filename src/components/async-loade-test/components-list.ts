@@ -1,4 +1,8 @@
 export const componentsList = {
+  'higher-order':{
+    getter: () => import("../higher-order/higher-order.tsx"),
+    des: "vue 高阶组件",
+  },
   vditor: {
     getter: () => import("../vditor/index.vue"),
     des: "vditor 编辑器",
