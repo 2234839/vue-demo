@@ -1,11 +1,19 @@
-import { defineComponent, onDeactivated, ref, Ref } from "vue";
+import { defineComponent, ref } from "vue";
 
-const a = ref([1, 2, 3, 4, 5]);
+const data = ref([1, 2, 3, 4, 5]);
 
-export default list(a);
+setInterval(() => {
+  data.value[0] = Date.now();
+}, 1000);
 
-function list<T>(data: Ref<T[]>) {
-  const ListComponent = defineComponent({
+//                         传递泛型
+const ListComponent = list<number>();
+
+//                            这里可以看到约束了 data 的类型必须是 number[]
+export default <ListComponent data={data.value} />;
+
+function list<T>() {
+  return defineComponent({
     props: {
       data: {
         type: Array as () => T[],
@@ -13,12 +21,6 @@ function list<T>(data: Ref<T[]>) {
       },
     },
     setup(props, ctx) {
-      const id = setInterval(() => {
-        data.value[0] = (Date.now() as unknown) as T;
-      }, 1000);
-
-      onDeactivated(() => clearInterval(id));
-
       return () => (
         <div>
           {props.data.map((el) => (
@@ -28,5 +30,4 @@ function list<T>(data: Ref<T[]>) {
       );
     },
   });
-  return () => <ListComponent data={data.value}>333</ListComponent>;
 }
