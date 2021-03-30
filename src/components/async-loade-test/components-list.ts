@@ -1,4 +1,8 @@
 export const componentsList = {
+  'test-getCurrentInstance':{
+    getter: () => import("../test-getCurrentInstance/test.tsx"),
+    des: "test-getCurrentInstance",
+  },
   'higher-order':{
     getter: () => import("../higher-order/higher-order.tsx"),
     des: "vue 高阶组件",
