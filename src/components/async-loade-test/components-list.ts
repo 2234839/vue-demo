@@ -38,11 +38,14 @@ export const componentsList = {
 };
 
 // 自动加载模块，不用手动在上面添加了
-const modules = import.meta.glob("../*/index.vue");
+const modules = import.meta.glob("../*/(index|des).{vue,tsx}");
 
-Object.keys(modules).forEach((path) => {
-  (componentsList as any)[path.slice(3, -10)] = {
-    getter: modules[path],
-    des: "",
-  };
-});
+Object.keys(modules)
+  .filter((path) => path.endsWith("index.vue") || path.endsWith("index.tsx"))
+  .forEach((path) => {
+    const name = path.slice(3, -10);
+    (componentsList as any)[name] = {
+      getter: modules[path],
+      des: modules[`../${name}/des.vue`] ?? modules[`../${name}/des.tsx`] ?? "",
+    };
+  });

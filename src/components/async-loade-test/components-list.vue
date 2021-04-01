@@ -11,7 +11,14 @@
     placeholder="输入「a」「b」或者其他 demo 名字来选择"
     style="width: 400px"
   />
-  <div>组件描述：{{ component.des }}</div>
+  <div>
+    组件描述：
+
+    <div v-if="typeof desComponent === 'string'">{{ component.des }}</div>
+    <div v-else>
+      <component :is="desComponent" />
+    </div>
+  </div>
 
   <div style="border: 1px solid #333">
     <component :is="template" />
@@ -19,7 +26,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, computed, defineAsyncComponent } from "vue";
+  import { computed, defineAsyncComponent, defineComponent } from "vue";
   import { componentsList } from "./components-list";
   export default defineComponent({
     props: {
@@ -48,7 +55,21 @@
         defineAsyncComponent(component.value.getter),
       );
 
-      return { templateName, template, componentsList, component };
+      const desComponent = computed(() => {
+        if (typeof component.value.des !== "string") {
+          return defineAsyncComponent(component.value.des);
+        } else {
+          return "";
+        }
+      });
+
+      return {
+        templateName,
+        template,
+        componentsList,
+        component,
+        desComponent,
+      };
     },
   });
 </script>
