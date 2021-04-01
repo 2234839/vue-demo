@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
-    "target": "esnext",
-    "module": "CommonJS",
+    "target": "ES6",
+    "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
     "jsx": "preserve",
