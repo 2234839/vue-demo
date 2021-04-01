@@ -1,9 +1,5 @@
 export const componentsList = {
-  'test-getCurrentInstance':{
-    getter: () => import("../test-getCurrentInstance/test.tsx"),
-    des: "test-getCurrentInstance",
-  },
-  'higher-order':{
+  "higher-order": {
     getter: () => import("../higher-order/higher-order.tsx"),
     des: "vue 高阶组件",
   },
@@ -40,3 +36,13 @@ export const componentsList = {
     des: "用来动态组件引入测试 b",
   },
 };
+
+// 自动加载模块，不用手动在上面添加了
+const modules = import.meta.glob("../*/index.vue");
+
+Object.keys(modules).forEach((path) => {
+  (componentsList as any)[path.slice(3, -10)] = {
+    getter: modules[path],
+    des: "",
+  };
+});
