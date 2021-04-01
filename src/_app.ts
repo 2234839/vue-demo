@@ -9,7 +9,7 @@ export default {
     );
 
     watchEffect(() => {
-      history.replaceState("", "", href.value);
+      history.pushState("", "", href.value);
     });
 
     const templateName = computed({
@@ -39,12 +39,18 @@ function useParamsObj<T extends object>(
   const params = reactive(defaultParams);
 
   searchParams.forEach((v, k) => {
-    (params as any)[k] = v;
+    try {
+      (params as any)[k] = atob(v);
+    } catch (error) {
+      // 兼容直接输入的情况
+      (params as any)[k] = v;
+    }
   });
 
   const href = computed(() => {
     Object.keys(params).forEach((k) => {
-      searchParams.set(k, (params as any)[k] || "");
+      const v = btoa((params as any)[k] || "");
+      searchParams.set(k, v);
     });
     return url.href;
   });
