@@ -12,7 +12,7 @@
       "dom"
     ],
     "types": [
-      "vite/client"
+      "vite/client",
     ],
     "plugins": [
       {
@@ -24,6 +24,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "./shims-vue.d.ts"
   ]
 }
