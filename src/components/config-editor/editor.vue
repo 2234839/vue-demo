@@ -1,15 +1,4 @@
 <template>
-  <mark>
-    因为使用了 vite 构建，所以这部分只能在高版本 chrome 下使用， Firefox
-    下还不兼容 :
-    <a
-      href="https://developer.mozilla.org/zh-CN/docs/Web/API/Worker/Worker#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7"
-    >
-      firefox 中不能使用 esm 的 import
-    </a>
-    <a href="https://github.com/vitejs/vite/issues/2550"> vite 相关 issues </a>
-    <br />
-  </mark>
   <div class="Editor" ref="root"></div>
 </template>
 <script lang="ts">
@@ -17,17 +6,62 @@
   import * as monaco from "monaco-editor";
   import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import TsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+  import JSON_Worker from "monaco-editor/esm/vs/language/json/json.worker?worker";
   // import A from "monaco-editor/dev/vs/editor/editor.main.js";
   // console.log("[A ]", A);
 
   // [Import monaco-editor using Vite 2](https://github.com/vitejs/vite/discussions/1791)
+  // Configures two JSON schemas, with references.
+
+
+
+  // [配置样例](https://github.com/microsoft/monaco-editor/issues/727#issuecomment-369939602)
+  var jsonCode = ["{", '    "p1": "v3",', '    "p2": false', "}"].join("\n");
+  var modelUri = monaco.Uri.parse("a://b/foo.json"); // a made up unique URI for our model
+  var model = monaco.editor.createModel(jsonCode, "json", modelUri);
+
+  // configure the JSON language support with schemas and schema associations
+  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    validate: true,
+    schemas: [
+      {
+        uri: "http://myserver/foo-schema.json", // id of the first schema
+        fileMatch: [modelUri.toString()], // associate with our model
+        schema: {
+          type: "object",
+          properties: {
+            p1: {
+              enum: ["v1", "v2"],
+            },
+            p2: {
+              $ref: "http://myserver/bar-schema.json", // reference the second schema
+            },
+          },
+        },
+      },
+      {
+        uri: "http://myserver/bar-schema.json", // id of the second schema
+        schema: {
+          type: "object",
+          properties: {
+            q1: {
+              enum: ["x1", "x2"],
+            },
+          },
+        },
+      },
+    ],
+  });
 
   // @ts-ignore
   self.MonacoEnvironment = {
     getWorker(_: string, label: string) {
       if (["typescript", "javascript"].includes(label)) {
         return new TsWorker();
+      } else if (label === "json") {
+        return new JSON_Worker();
       }
+      console.log("[JSON_Worker]", JSON_Worker);
       return new EditorWorker();
     },
   };
@@ -37,8 +71,8 @@
       let editor: monaco.editor.IStandaloneCodeEditor;
       onMounted(() => {
         editor = monaco.editor.create(root.value as HTMLElement, {
-          language: "typescript",
-          value: `console.log("hello world"); `,
+          model,
+          language: "json",
         });
       });
       onUnmounted(() => {
@@ -49,6 +83,8 @@
       };
     },
   });
+
+  export const des = `222`;
 </script>
 
 <style scoped>
