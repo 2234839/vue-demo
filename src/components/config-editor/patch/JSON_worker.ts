@@ -3,7 +3,7 @@ import * as worker from "monaco-editor/esm/vs/editor/editor.worker.js";
 //@ts-ignore 这里引用我修改后的 monaco-json 项目，它将 ts 文件暴露出来了，使得 monaco-json 依赖 vscode-nls
 import { ICreateData, JSONWorker } from "monaco-json/src/jsonWorker";
 // 修改了 vscode-nls 新增 preproccess 对象，可以进行一些本地化的替换工作
-import { format, preproccess, isPseudo } from "vscode-nls/src/common/common";
+import { format, preproccess } from "vscode-nls/src/common/common";
 
 const tranMap = {
   TrailingComma: `数组尾随逗号`,
@@ -15,6 +15,8 @@ const tranMap = {
 } as { [key: string]: string };
 if (preproccess.localize === undefined) {
   preproccess.localize = (_key, message, args) => {
+    console.log(_key, message, args);
+
     if (typeof _key === "string" && tranMap[_key]) {
       message = tranMap[_key];
     } else {
@@ -23,6 +25,7 @@ if (preproccess.localize === undefined) {
     return format(message, args);
   };
 }
+console.log("TEST");
 
 class Worker extends JSONWorker {
   constructor(ctx: any, createData: ICreateData) {

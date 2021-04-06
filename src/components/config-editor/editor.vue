@@ -4,9 +4,9 @@
 <script lang="ts">
   // import "./patch/localize";
   import * as monaco from "monaco-editor";
-  import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+  // import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
   import JSON_Worker from "./patch/JSON_worker?worker";
-  import TsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
+  // import TsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
   import { defineComponent, onDeactivated, onMounted, ref } from "vue";
 
   // JSON_Worker.prototype.format = function (...args: any) {
@@ -198,12 +198,15 @@
   // @ts-ignore
   self.MonacoEnvironment = {
     getWorker(_: string, label: string) {
-      if (["typescript", "javascript"].includes(label)) {
-        return new TsWorker();
-      } else if (label === "json") {
-        return new JSON_Worker();
-      }
-      return new EditorWorker();
+      return new JSON_Worker();
+
+      // if (["typescript", "javascript"].includes(label)) {
+      //   // return new TsWorker();
+      //   return new EditorWorker();
+      // } else if (label === "json") {
+      //   return new JSON_Worker();
+      // }
+      // return new EditorWorker();
     },
   };
 
