@@ -1,0 +1,2 @@
+import{o as e,a as r,e as o,c as s}from"./index.08251072.js";const t={},i=o(" 因为使用了 vite 构建，所以这部分只能在高版本 chrome 下使用， Firefox 下还不兼容 : "),a=s("a",{href:"https://developer.mozilla.org/zh-CN/docs/Web/API/Worker/Worker#%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7"}," firefox 中不能使用 esm 的 import ",-1),l=s("a",{href:"https://github.com/vitejs/vite/issues/2550"}," vite 相关 issues ",-1),n=s("br",null,null,-1);t.render=function(o,s){return e(),r("mark",null,[i,a,l,n])};export default t;
+//# sourceMappingURL=des.dcd96668.js.map
