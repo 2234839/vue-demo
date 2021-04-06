@@ -28,6 +28,10 @@ jobs:
       # Runs a single command using the runners shell
       - name: npm install
         run: npm install
+
+      # 在 github actions 的编译下会在 vscode-json-languageservice 下安装他相关的依赖，
+      # 但我本地开发的时候没有出现这个情况，config-editor 这个组件为了本地化需要重写 vscode-nls
+      # 如果让 vscode-json-languageservice 安装了他的依赖则会让我的重写失效，所以这里删去
       - name: npm clear
         run: rm -rf ./node_modules/vscode-json-languageservice/node_modules
       - name: build

@@ -15,8 +15,6 @@ const tranMap = {
 } as { [key: string]: string };
 if (preproccess.localize === undefined) {
   preproccess.localize = (_key, message, args) => {
-    console.log(_key, message, args);
-
     if (typeof _key === "string" && tranMap[_key]) {
       message = tranMap[_key];
     } else {
