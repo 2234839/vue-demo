@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -28,6 +28,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: npm install
         run: npm install
+      - name: npm clear
+        run: rm -rf ./node_modules/monaco-json/node_modules
       - name: build
         run: npm run build
       -
