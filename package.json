@@ -3,11 +3,15 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "dev-force": "vite --force",
     "build": "vite build"
   },
   "dependencies": {
     "monaco-editor": "^0.23.0",
+    "monaco-json": "git+https://github.com/2234839/monaco-json.git",
     "vditor": "^3.8.4",
+    "vscode-json-languageservice": "^4.0.2",
+    "vscode-nls": "git+https://github.com/2234839/vscode-nls.git",
     "vue": "^3.0.10"
   },
   "devDependencies": {
