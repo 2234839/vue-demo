@@ -4,12 +4,12 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 
 // https://github.com/vitejs/vite/issues/1927#issuecomment-805803918
 const prefix = `monaco-editor/esm/vs`;
-
 export default defineConfig({
   plugins: [vue(), vueJsx({})],
   base: "./",
   build: {
     assetsDir: "assets",
+    sourcemap: true,
     rollupOptions: {
       output: {
         // https://github.com/vitejs/vite/issues/1927#issuecomment-805803918
